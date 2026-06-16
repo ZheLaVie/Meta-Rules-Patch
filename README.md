@@ -12,10 +12,10 @@
 
 本仓库位于 `/Rules-dat` 目录下，主要文件结构如下：
 
-| 文件名 | 描述 |
-| :--- | :--- |
-| `*.list` | 标准的 **域名列表** 规则文件。 |
-| `*.mrs` | 针对 **Mihomo/Clash** 的 **RULE-SET** 规则集文件，可直接引用。 |
+| 文件名   | 描述                                                           |
+| :------- | :------------------------------------------------------------- |
+| `*.list` | 标准的 **域名列表** 规则文件。                                 |
+| `*.mrs`  | 针对 **Mihomo/Clash** 的 **RULE-SET** 规则集文件，可直接引用。 |
 
 ---
 
@@ -28,20 +28,23 @@
 #### 1. 规则文件链接示例
 
 您可以直接引用任何一个 `.mrs` 文件，例如 `usmart.mrs` 的 Raw 链接如下：
+
 ```
-https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/usmart.mrs
+https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/usmart.mrs
 ```
+
 或任意`.list` 文件，例如 `direct.list` 的 Raw 链接如下：
+
 ```
-https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/direct.list
+https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/direct.list
 ```
 
 #### 2. 配置片段示例 (以 Clash/Mihomo 配置为例)
 
 您需要在您的配置文件中引用这些规则，并将它们导向正确的策略组（例如 `DIRECT` 或 `PROXY`）。
 
-
 ##### 1. 设置规则匹配
+
 ```yaml
 rules:
   - RULE-SET,usmart_domain,DIRECT
@@ -50,22 +53,24 @@ rules:
 ```
 
 ##### 2. 设置规则集
+
 ```yaml
 #设立锚点
 rule-anchor:
   domain: &domain { type: http, interval: 86400, behavior: domain, format: mrs }
-  text-domain: &text-domain { type: http, interval: 86400, behavior: domain, format: text }
+  text-domain:
+    &text-domain { type: http, interval: 86400, behavior: domain, format: text }
 #规则集
 rule-providers:
   usmart_domain:
     {
       <<: *domain,
-      url: "https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/usmart.mrs",
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/usmart.mrs",
     }
   direct_domain:
     {
       <<: *text-domain,
-      url: "https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/direct.list",
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/direct.list",
     }
 ...
 ```
