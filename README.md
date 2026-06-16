@@ -10,12 +10,26 @@
 
 ### ✨ 核心内容
 
-本仓库位于 `/Rules-dat` 目录下，主要文件结构如下：
+本仓库位于 `/Meta-Rules-Patch` 目录下，主要文件结构如下：
 
-| 文件名   | 描述                                                           |
-| :------- | :------------------------------------------------------------- |
-| `*.list` | 标准的 **域名列表** 规则文件。                                 |
-| `*.mrs`  | 针对 **Mihomo/Clash** 的 **RULE-SET** 规则集文件，可直接引用。 |
+| 文件名     | 描述                           |
+| :--------- | :----------------------------- |
+| `/geoip`   | 标准的 **IP列表** 规则文件。   |
+| `/geosite` | 标准的 **域名列表** 规则文件。 |
+
+本仓库位于 `/Meta-Rules-Patch/geoip` 目录下，主要文件结构如下：
+
+| 文件名   | 描述                               |
+| :------- | :--------------------------------- |
+| `*.list` | 标准的 **IP列表** 规则文本文件。   |
+| `*.mrs`  | 标准的 **IP列表** 规则二进制文件。 |
+
+本仓库位于 `/Meta-Rules-Patch/geosite` 目录下，主要文件结构如下：
+
+| 文件名   | 描述                                 |
+| :------- | :----------------------------------- |
+| `*.list` | 标准的 **域名列表** 规则文本文件。   |
+| `*.mrs`  | 标准的 **域名列表** 规则二进制文件。 |
 
 ---
 
@@ -27,16 +41,16 @@
 
 #### 1. 规则文件链接示例
 
-您可以直接引用任何一个 `.mrs` 文件，例如 `usmart.mrs` 的 Raw 链接如下：
+您可以直接引用任何一个 `.mrs` 文件，例如 `xxx.mrs` 的 Raw 链接如下：
 
 ```
-https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/usmart.mrs
+https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/xxx.mrs
 ```
 
-或任意`.list` 文件，例如 `direct.list` 的 Raw 链接如下：
+或任意`.list` 文件，例如 `xxx.list` 的 Raw 链接如下：
 
 ```
-https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/direct.list
+https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geoip/xxx.list
 ```
 
 #### 2. 配置片段示例 (以 Clash/Mihomo 配置为例)
@@ -47,8 +61,10 @@ https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/direct.
 
 ```yaml
 rules:
-  - RULE-SET,usmart_domain,DIRECT
+  - RULE-SET,xxx_domain,DIRECT
   - RULE-SET,xxx_domain,PROXY
+  - RULE-SET,xxx_ip,DIRECT,no-resolve
+  - RULE-SET,xxx_ip,PROXY,no-resolve
 ...
 ```
 
@@ -57,20 +73,35 @@ rules:
 ```yaml
 #设立锚点
 rule-anchor:
+  ip: &ip { type: http, interval: 86400, behavior: ipcidr, format: mrs }
+  text-ip:
+    &text-ip { type: http, interval: 86400, behavior: ipcidr, format: text }
   domain: &domain { type: http, interval: 86400, behavior: domain, format: mrs }
   text-domain:
     &text-domain { type: http, interval: 86400, behavior: domain, format: text }
 #规则集
 rule-providers:
-  usmart_domain:
+  xxx_ip:
+    {
+      <<: *ip,
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geoip/xxx.mrs",
+      interval: 86400,
+    }
+  xxx_ip:
+    {
+      <<: *text-ip,
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geoip/xxx.list",
+      interval: 86400,
+    }
+  xxx_domain:
     {
       <<: *domain,
-      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/usmart.mrs",
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/xxx.mrs",
     }
-  direct_domain:
+  xxx_domain:
     {
       <<: *text-domain,
-      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/direct.list",
+      url: "https://raw.githubusercontent.com/ZheLaVie/Meta-Rules-Patch/main/geosite/xxx.list",
     }
 ...
 ```
