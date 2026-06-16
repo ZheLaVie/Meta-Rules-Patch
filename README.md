@@ -29,11 +29,11 @@
 
 您可以直接引用任何一个 `.mrs` 文件，例如 `usmart.mrs` 的 Raw 链接如下：
 ```
-https://raw.githubusercontent.com/Ricky-Yz/mihomo-rule-data/main/Rules-dat/usmart.mrs
+https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/usmart.mrs
 ```
 或任意`.list` 文件，例如 `direct.list` 的 Raw 链接如下：
 ```
-https://raw.githubusercontent.com/Ricky-Yz/mihomo-rule-data/main/Rules-dat/direct.list
+https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/direct.list
 ```
 
 #### 2. 配置片段示例 (以 Clash/Mihomo 配置为例)
@@ -60,12 +60,12 @@ rule-providers:
   usmart_domain:
     {
       <<: *domain,
-      url: "https://raw.githubusercontent.com/Ricky-Yz/mihomo-rule-data/main/Rules-dat/usmart.mrs",
+      url: "https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/usmart.mrs",
     }
   direct_domain:
     {
       <<: *text-domain,
-      url: "https://raw.githubusercontent.com/Ricky-Yz/mihomo-rule-data/main/Rules-dat/direct.list",
+      url: "https://raw.githubusercontent.com/ZheLaVie/mihomo-rule-data/main/geosite/direct.list",
     }
 ...
 ```
