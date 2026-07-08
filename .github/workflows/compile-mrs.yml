@@ -1,0 +1,60 @@
+name: 🚀 Auto Build MRS
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "**/*.list"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 🚚 检出代码
+              # 允许 Action 拥有写入代码仓库的权限
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: 🔍 智能获取并安装最新版 Mihomo 内核
+              run: |
+                  # 1. 使用 GitHub API 获取 Mihomo 的最新版本号
+                  LATEST_VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)
+                  echo "获取到 Mihomo 最新版本: $LATEST_VERSION"
+
+                  # 2. 下载最新版本的 Mihomo
+                  wget -qO mihomo.gz "https://github.com/MetaCubeX/mihomo/releases/download/${LATEST_VERSION}/mihomo-linux-amd64-${LATEST_VERSION}.gz"
+
+                  # 3. 解压并安装 Mihomo
+                  gunzip mihomo.gz
+                  chmod +x mihomo
+                  sudo mv mihomo /usr/local/bin/
+
+            - name: 📦 智能编译 .list 为 .mrs
+              run: |
+                  # 自动寻找所有 .list 文件并循环处理
+                  find . -type f -name "*.list" | while read file; do
+                    # 自动替换文件后缀
+                    mrs_file="${file%.list}.mrs"
+                    
+                    # 智能判断：如果路径里包含 geoip,就用 ipcidr 模式；否则用 domain 模式
+                    if [[ "$file" == *"geoip"* ]]; then
+                      rule_type="ipcidr"
+                    else
+                      rule_type="domain"
+                    fi
+                    
+                    echo "正在编译 [$rule_type 模式]: $file -> $mrs_file"
+                    
+                    # 执行编译命令
+                    mihomo convert-ruleset $rule_type text "$file" "$mrs_file"
+                  done
+
+            - name: 🚀 自动提交并推送
+              uses: stefanzweifel/git-auto-commit-action@v5
+              with:
+                  commit_message: "CI: Auto-update compiled .mrs files"
+                  file_pattern: "**/*.mrs"
